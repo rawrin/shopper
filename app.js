@@ -18,13 +18,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
+  // Note: If no store is passed, memory is used.
   // Todo(Warren): Config for secret
   secret: 'DOMO ARIGATO MR. ROBOTO',
   resave: false,
   saveUninitialized: true,
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 app.use('/', routes);
 app.use('/applicants', applicants);
