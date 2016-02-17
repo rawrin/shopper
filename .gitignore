@@ -1,0 +1,7 @@
+.DS_Store
+node_modules
+public/js/bundle.js
+public/css/bundle.css
+
+db/*.sqlite3
+/db/*.sqlite3-journal

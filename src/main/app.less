@@ -1,0 +1,52 @@
+@import "npm://react-select/less/select.less";
+@import "./Apply/index";
+@import "./Button/index";
+@import "./BackgroundCheck/index";
+@import "./Complete/index";
+@import "./Footer/index";
+@import "./Form/index";
+@import "./Header/index";
+@import "./Spinner/index";
+
+#app {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #66cc66;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.shopper__container {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.shopper__box {
+  background-color: white;
+  border-radius: 4px;
+  display: flex;
+  flex-flow: row wrap;
+  height: 70vh;
+  margin: auto;
+  margin-top: 1rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  position: relative;
+  text-align: center;
+  width: 75%;
+}
+
+.shopper__box-content {
+  display: flex;
+  flex: 1 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.shopper__loader {
+  display: flex;
+  justify-content: center;
+}
