@@ -3,10 +3,12 @@
 /**
  * Module dependencies.
  */
+// Note(Warren): Transpiling for production is not safe, currently a hack for the ES6 import system on the front end.
 require('babel-register');
 var app = require('../app');
 var debug = require('debug')('shopper_challenge:server');
 var http = require('http');
+var db = require('../db');
 
 /**
  * Get port from environment and store in Express.
@@ -18,16 +20,17 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+// Note(Warren): Will not start server unless database connects.
+var server;
+db.init(function() {
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
+  server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+});
 
 /**
  * Normalize a port into a number, string, or false.

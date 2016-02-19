@@ -1,3 +1,7 @@
+To start server:
+1. Run `npm install`
+2. Run `npm run watch`
+
 To Do List For Shopper Project:
 ===============================
 
