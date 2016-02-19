@@ -35,7 +35,7 @@ export default class Form extends React.Component {
   render() {
     let selectClassName = 'shopper__box-select';
     if (!this.state.city) {
-      selectClassName = selectClassName + ' shopper__box-select-invalid';
+      selectClassName = 'shopper__box-select-invalid';
     }
 
     return (
@@ -64,7 +64,8 @@ export default class Form extends React.Component {
           required
         />
         <ReactSelect
-          className="shopper__box-select"
+          className={selectClassName}
+          clearable={false}
           onChange={val => this._updateData({city: val})}
           options={options}
           value={this.state.city}

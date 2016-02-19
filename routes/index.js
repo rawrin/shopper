@@ -5,13 +5,13 @@ var React = require('react');
 var AppContainer = require('../src/main/AppContainer').default;
 
 router.get('/', function(req, res) {
-  const dummyUser = {
-    first_name: 'Warren',
-    last_name: 'Ng',
-    phone_number: 6466888186,
-    city: 'san_francisco'
-  };
-
+  // const user = {
+  //   first_name: 'Warren',
+  //   last_name: 'Ng',
+  //   phone_number: 6466888186,
+  //   city: 'san_francisco'
+  // };
+  const user = {};
   res.write(`
     <!DOCTYPE html>
       <html>
@@ -24,11 +24,11 @@ router.get('/', function(req, res) {
   );
   res.write(
     ReactServer.renderToString(
-      React.createElement(AppContainer, { data: dummyUser })
+      React.createElement(AppContainer, { data: user })
     )
   );
   res.write('</div><script id="data" type="json">')
-  const jsonString = JSON.stringify(dummyUser);
+  const jsonString = JSON.stringify(user);
   console.log(jsonString);
   res.write(jsonString);
   res.write(`

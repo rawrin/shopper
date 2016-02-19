@@ -17,18 +17,31 @@
   width: 25rem;
 }
 
-.shopper__box-select {
-  text-align: left;
+.shopper__box-form input:invalid {
+  border-color: #ff4c4c;
 }
 
-.shopper__box-select-invalid {
-  border-color: #ff4c4c;
+.shopper__box-select {
+  text-align: left;
 }
 
 .shopper__box-select input {
   border: none;
 }
 
-.shopper__box-form input:invalid {
+.shopper__box-select-invalid {
+  text-align: left;
+}
+
+.shopper__box-select-invalid input {
+  border: none;
+}
+
+.shopper__box-select-invalid > .Select-control {
+  text-align: left;
   border-color: #ff4c4c;
+}
+
+.shopper__box-select > .Select-control {
+  border-color: #000000;
 }
