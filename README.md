@@ -7,6 +7,9 @@ To start server:
 2. Run `npm run watch`
 
 
+For the funnel endpoint to work, it is assumed there is a development.sqlite3 file with a pre-existing shopper table.
+
+
 SUMMARY:
 ========
 
