@@ -4,7 +4,7 @@ export default class Apply extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: this.props.userInfo.email,
+      email: this.props.userInfo.email || null,
       valid: true,
     }
   }
@@ -35,7 +35,7 @@ export default class Apply extends React.Component {
     return (
       <div className="shopper__box-apply">
         <h1>Work at Instacart</h1>
-        <p>Apply in under 5 minutes</p>
+        <p>Earn up to $20 an hour shopping or delivering groceries at Instacart!</p>
 
         <input
           className={className}

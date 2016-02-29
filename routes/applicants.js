@@ -1,25 +1,38 @@
 var express = require('express');
+var validator = require('validator');
 var router = express.Router();
+var db = require('../db');
 
-// post for applicants going into the database
-// should create applicant with email
-// save the email into the session data.
-// if email already exists in teh database and form is complete then do nothing, tell client to go to end steps
-// if form is incomplete, then update "updatedAt"
-router.post('/', function(req, res, next) {
-
-});
-
-/*
-{
-  email:
-  first_name:
-  last_name:
-  phone_number:
-  city:
-  complete: 
-  
+router.post('/', function(req, res) {
+  req.body.user = req.body.user || {};
+  if (!req.session.email && (!req.body.user.email || !validator.isEmail(req.body.user.email))) {
+    return res.send({
+      error: 'invalid email'
+    });
   }
- */
+
+  var user = req.body.user;
+
+  db.updateOrInsert(user, function(err, user) {
+    if (err) {
+      console.error('An error occured: ', err);
+      // handle returning errors differently
+      return res
+        .status(204)
+        .end();
+    }
+
+    if (!req.session.email) {
+      req.session.email = user.email;
+    }
+
+    var payload = {};
+    payload.user = user;
+    console.log('sending back new user: ', payload);
+    return res
+      .status(200)
+      .send(payload);
+  });
+});
 
 module.exports = router;

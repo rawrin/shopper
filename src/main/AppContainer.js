@@ -5,10 +5,14 @@ import Apply from './Apply';
 import BackgroundCheck from './BackgroundCheck';
 import Button from './Button';
 import Complete from './Complete';
+import ErrorScreen from './ErrorScreen';
 import Footer from './Footer';
 import Form from './Form';
 import Header from './Header';
 import Spinner from './Spinner';
+
+const STAGE_MAX = 3;
+const STAGE_MIN = 0;
 
 export default class AppContainer extends React.Component {
   constructor(props) {
@@ -16,17 +20,10 @@ export default class AppContainer extends React.Component {
     this.state = {
       stage: 0,
       loading: false,
-      userInfo: this.props.data,
+      userInfo: this.props.data || {},
       backgroundCheck: null,
       complete: false,
-    }
-  }
-
-  _nextStage(e) {
-    if (this._isValid()) {
-      this.setState(state => ({
-        stage: Math.min(3, state.stage + 1)
-      }));
+      error: false,
     }
   }
 
@@ -36,19 +33,84 @@ export default class AppContainer extends React.Component {
     });
   }
 
+  // Send date is not reliant on server response to continue through the app
+  _sendData() {
+    let payload = {};
+    payload.user = this.state.userInfo;
+    if (this.state.backgroundCheck === 'yes') {
+      payload.user.background_check = true;
+    } else if (this.state.backgroundCheck === 'no') {
+      payload.user.background_check = false;
+    }
+    payload.user.complete = this.state.complete;
+    if (this.state.userInfo.phone_number && typeof this.state.userInfo.phone_number === 'number') {
+      payload.user.phone_number = JSON.stringify(this.state.userInfo.phone_number)
+    }
+    console.log('payload looks like...', payload);
+    Request
+      .post('/applicants')
+      .send(payload)
+      .end(function(err, res) {
+        if (err) {
+          console.error(err);
+          return this.setState({
+            error: true,
+          });
+        }
+      });
+  }
+
+  // The initial apply process requires server response to proceed.
+  _onApply() {
+    let setState = this.setState.bind(this);
+    this.setState({
+      loading: true,
+    });
+    let payload = {};
+    payload.user = {
+      email: this.state.userInfo.email,
+    }
+    Request
+      .post('/applicants')
+      .send(payload)
+      .end(function(err, res) {
+        if (err) {
+          console.error(err);
+          return setState({
+            error: true,
+          });
+        }
+
+        setState(state => ({
+          stage: Math.min(STAGE_MAX, state.stage + 1),
+          loading: false,
+          userInfo: res.body.user || {},
+          complete: res.body.user.complete || false,
+        }))
+      });
+  }
+
+  _nextStage(e) {
+    if (this._isValid()) {
+      this.setState(state => ({
+        loading: false,
+        stage: Math.min(STAGE_MAX, state.stage + 1),
+        complete: state.stage === 2 ? true : false
+      }), this._sendData);
+    }
+  }
+
   _prevStage() {
-    this.setState(state => ({stage: Math.max(0, state.stage - 1)}))
+    this.setState(state => ({stage: Math.max(STAGE_MIN, state.stage - 1)}))
   }
 
   _updateUser(newData) {
-    console.log('new data!', newData);
     this.setState(({userInfo}) => ({userInfo: Object.assign(userInfo, newData)}) )
   }
 
   _isValid() {
     if (this.state.stage === 1) {
       let check = this.refs.formRef.refs.userForm;
-      console.log('validity check: ', check);
       // Todo(Warren): Feels hacky, find a better way to validate
       return this.refs.formRef.refs.userForm.checkValidity() && this.state.userInfo.city;
     } else if (this.state.stage === 2) {
@@ -64,6 +126,12 @@ export default class AppContainer extends React.Component {
     if (this.state.loading) {
       comp = <Spinner />
       hideNav = true;
+    } else if (this.state.complete) {
+      comp = <Complete />;
+      hideNav = true;
+    } else if (this.state.error) {
+      comp = <ErrorScreen />
+      hideNav = true;
     } else {
       switch(this.state.stage) {
         case 0:
@@ -71,7 +139,7 @@ export default class AppContainer extends React.Component {
             <Apply
               userInfo={this.state.userInfo}
               updateUser={this._updateUser.bind(this)}
-              onApply={this._nextStage.bind(this)}
+              onApply={this._onApply.bind(this)}
             />
           );
           hideNav = true;
@@ -123,7 +191,7 @@ export default class AppContainer extends React.Component {
               />
               {comp}
             </div>
-          <Footer />
+          <Footer stages={STAGE_MAX} />
         </div>
       </div>
     );

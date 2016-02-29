@@ -1,97 +1,24 @@
-Shopper Challenge
-=================
+To start server:
+1. Run `npm install`
+2. Run `npm run watch`
 
-Please build this like you would an actual project you're working on. It should be production-ready code that you're proud of.
+To Do List For Shopper Project:
+===============================
 
-Instacart Shoppers are the face of the company - literally - and as such, we require them to go through a rigorous process before they can deliver your groceries. This includes a comprehensive application as well as a training process.
+1. Create Gulpfile instead of relying on NPM scripts
+2. Full Test Coverage
+3. Front end optimizations
+4. .eslintrc (Lint)
+5. Mobile optimizations
+6. What happens after the shopper flow is complete?
+7. Prop validation in components
+8. Better validation messages for input fields
+9. Optimization for SQL queries
 
-This challenge is broken into two parts. The first part is implementing the public-facing site that a prospective Instacart Shopper would see when hearing about the opportunities that Instacart offers. The second is writing analytics to monitor the progress of shoppers through the hiring funnel.
+I spent about 12-13 hrs on the front end portion of this app. The decision to use a static floating modal in the center of the page was to reduce context switching from the viewer clicking apply to going to a different app. I would like to add more information to draw the user in and make better use of the extra whitespace in the modal but I felt I spent a bit too much time on the design aspect. The code itself for the front end is quite simple, I used React because I personally enjoy the API as well as the sensible architecture. I felt I could've done better in organizing all the components and fleshing out their options more. I'm not entirely happy with the validation API I used (`.checkValidity()` in AppContainer.js) and I felt like a proper next step would be to use React to validate the components itself. For the session data, I decided to use server-side rendering in order to propogate the props throughout the components. The cities input for the form currently is a hardcoded object, but ideally it should come from the backend similarly to the session user data. 
 
-## Before You Start
+As for the saving of the applicants into the database, I built the form around the prompt and didn't notice the difference in schemas from the development.sqlite3 file, so I decided to separate the different parts of the project into 2 files. Ideally they would be in the same one.
 
-* We expect to be wowed by one or more of the challenges. If you're a strong frontend developer, spend more time making the applicant form and design superb (Part 1). If you're skilled with SQL, your funnel query should be blazing fast (Part 2). Given this is a timed evaluation, you'll have to choose wisely how you spend your time, but please show us what you're great at!
-* Include a git repository in your submission, with the db/development.sqlite3 file added to your  project's .gitignore. Check in commits as you reach certain milestones. If you need to take a break, check in a commit with something like, “Taking a break” followed by “Resuming work” when you're ready to begin again. We're interested in how long it takes you to complete this challenge, so the git history gives a good indication of when you reached certain milestones. You do not need to make full Git commit messages - we understand there's a time crunch!
-* Consider adding a README.md that includes any necessary setup instructions, notes on design decisions, and any trade offs you made as you worked through the challenge.
+In the backend, I decided to use knex for SQL query building to avoid writing string queries, but if the need came down to it you can use the "raw" functionality of knex to write more custom queries. I'm using the async module to run the queries in parallel. Depending on usage, this part can be refactored to a singular transaction and the module I created for the database can be refactored to use transaction promise objects instead. The funnel endpoint as well as the module I created for interacting with the database needs tests. I did a lot of manual testing, but we don't want any future changes to affect pre-existing functionality so tests are absolutely integral. The dates being used for the funnel should be standardized as well instead of giving the end user options for what date formats they would like to use. 
 
-## Part 1: Shopper Applicants
-
-Instead of tracking prospective Instacart Shoppers through a third-party service, we want to build the application in-house.
-
-The process is simple:
-
-1. Applicant sees a landing page and be presented with a button to "Apply Now"
-2. Applicant presented with a form asking some basic information.
-3. On a separate page, the applicant is required to confirm they are OK with Instacart running a background check.
-4. They submit the form and presented with a confirmation.
-
-### Requirements
-
-We are looking primarily for a good "product sense." This means thinking about the problem from the Instacart Shopper applicant's perspective and crafting a nice experience. The best submissions include the following:
-
-- Validation messages shown clearly.
-- Landing page has a clear call to action.
-- Shopper Applicant is persisted in the database.
-- No need for authentication or authorization, however, create a session using the Applicant's email so they can view/edit their current application.
-- A clean look & feel of the pages - we want Shoppers to feel welcome.
-
-Take a look at Instacart's existing Shopper application site to see how we approached this problem, but please don't produce an exact replica: https://www.instacart.com/shoppers
-
-## Part 2: Applicant Analysis
-
-To monitor how well applicants are being moved through the hiring process, we want to build a simple funnel that tracks how many applicants are in each step of the process by week. We'll use this data to look for places to improve our Personal Shopper screening process.
-
-### Requirements
-
-Write the `/funnels.json` endpoint such that it takes two parameters as options, `start_date` and `end_date`, and returns a JSON response analyzing the `workflow_state`s of the Applicants, grouped by the week they applied.   
-
-This should be structured like:
-
-```json
-{
-    "2014-12-01-2014-12-07": {
-        "applied": 100,
-        "quiz_started": 50,
-        "quiz_completed": 20,
-        "onboarding_requested": 10,
-        "onboarding_completed": 5,
-        "hired": 1,
-        "rejected": 0
-    },
-    "2014-12-08-2014-12-14": {
-        "applied": 200,
-        "quiz_started": 75,
-        "quiz_completed": 50,
-        "onboarding_requested": 20,
-        "onboarding_completed": 10,
-        "hired": 5,
-        "rejected": 0
-    },
-    "2014-12-15-2014-12-21": {
-        "applied": 70,
-        "quiz_started": 20,
-        "quiz_completed": 10,
-        "onboarding_requested": 0,
-        "onboarding_completed": 0,
-        "hired": 0,
-        "rejected": 0
-    },
-    "2014-12-22-2014-12-28": {
-        "applied": 40,
-        "quiz_started": 20,
-        "quiz_completed": 15,
-        "onboarding_requested": 5,
-        "onboarding_completed": 1,
-        "hired": 1,
-        "rejected": 0
-    }
-}
-```
-
-- This result is simulated in terms of the numbers but correctly shows how the response should be formatted.
-- The buckets (e.g. "2014-12-22-2014-12-28") can be ordered however you prefer - we are simply looking for accuracy.
-- The buckets should cover Monday to Sunday.
-- Buckets need not include states which have a count of 0.
-- `start_date` and `end_date` will be formatted like '2014-12-22'.
-- We will only be testing date ranges up to (and including) 2014-12-31, so any applicants you create (assuming your system clock is accurate to a year) will not be included.
-
-We're particular interested in the speed of your implementation, so please consider performance as you work through this part of the challenge.
+Overall this whole project took about 22 hrs total, some optimizations I can do is saving where the user stopped his or her process and send the stage data back to the client so they can continue where they stopped. A UX improvement definitely with validation messages other than just a colored border on the inputs as well as more information on the landing page. Creating a "stage display" to show what steps the user is currently at as well as the total amount of steps would probably be a UX improvement as well.

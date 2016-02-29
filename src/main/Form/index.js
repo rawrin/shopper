@@ -1,7 +1,7 @@
 import React from 'react';
-
 import ReactSelect from 'react-select';
 
+// Options should be returned from the server...
 const options = [
   {value: 'san_francisco', label: 'San Francisco'},
   {value: 'san_jose', label: 'San Jose'},
@@ -12,12 +12,14 @@ export default class Form extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      city: this.props.userInfo.city,
+      city: this.props.userInfo.city || null,
     }
   }
 
-  _onSubmit(e) {
-    e.preventDefault();
+  componentWillReceiveProps(props) {
+    this.setState({
+      city: this.props.userInfo.city || null,
+    });
   }
 
   _updateData(val) {
@@ -39,7 +41,7 @@ export default class Form extends React.Component {
     }
 
     return (
-      <form className="shopper__box-form" onSubmit={this._onSubmit.bind(this)} ref='userForm'>
+      <form className="shopper__box-form" ref='userForm'>
         <input
           placeholder="First Name"
           defaultValue={this.props.userInfo.first_name}
@@ -59,7 +61,6 @@ export default class Form extends React.Component {
           defaultValue={this.props.userInfo.phone_number}
           onChange={val => this._updateData({phone_number: val})}
           pattern="^[0-9\(\)-]{9,15}$"
-          type="number"
           ref="phoneNumber"
           required
         />
